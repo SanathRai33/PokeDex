@@ -37,37 +37,3 @@
     gap: 20px;
 }
 
-.pokemon-card{
-    width: 280px;
-    height: 280px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    border-radius: 8px;
-    border: 2px solid black;
-    &:hover{
-        opacity: 0.4;
-    }
-}
-
-.PokemonList h4{
-    margin: 0;
-    font-size: 1.8rem;
-    font-weight: 700;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    letter-spacing: 5px;
-
-}
-
-.pokemon-card .card-poster{
-    width: 200px;
-    height: 200px;
-}
-
-.card-poster img{
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}

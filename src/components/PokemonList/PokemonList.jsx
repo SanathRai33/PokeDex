@@ -1,29 +1,31 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import './PokemonList.css'
+import React, { useEffect, useState } from 'react';
+import './PokemonList.css';
+import Pokemon from '../Pokemon/Pokemon';
 
 const PokemonList = () => {
-
     const DEFAULT_URL = "https://pokeapi.co/api/v2/pokemon";
 
-    const [ pokemonLists, setPokemonLists ] = useState([])
-    const [ pokeUrl, setPokeUrl ] = useState(DEFAULT_URL);
-    const [ prevUrl, setPrevUrl ] = useState(DEFAULT_URL);
-    const [ nextUrl, setNextUrl ] = useState(DEFAULT_URL);
-
+    const [pokemonListState, setPokemonListState] = useState({
+        pokemonLists: [],
+        pokeUrl: DEFAULT_URL,
+        prevUrl: null,
+        nextUrl: null,
+    });
 
     const fetchPokemon = async () => {
-
-        const response = await axios.get(pokeUrl? pokeUrl : DEFAULT_URL);
+        const response = await axios.get(pokemonListState.pokeUrl || DEFAULT_URL);
 
         const pokemonResult = response.data.results;
 
-        setPrevUrl(response.data.previous)
-        setNextUrl(response.data.next)
+        setPokemonListState(state => ({
+            ...state,
+            prevUrl: response.data.previous,
+            nextUrl: response.data.next
+        }));
 
-        const pokemonPromise = pokemonResult.map((pokemon) => axios.get(pokemon.url));
-
-        const pokemonListData = await axios.all(pokemonPromise)
+        const pokemonPromise = pokemonResult.map(pokemon => axios.get(pokemon.url));
+        const pokemonListData = await axios.all(pokemonPromise);
 
         const pokemonFinalList = pokemonListData.map(pokemonData => {
             const pokemon = pokemonData.data;
@@ -32,43 +34,47 @@ const PokemonList = () => {
                 name: pokemon.name,
                 image: pokemon.sprites.other.dream_world.front_default,
                 types: pokemon.types,
-            }
-        })
-        setPokemonLists(pokemonFinalList)
+            };
+        });
 
-
-        console.log(pokemonFinalList)
-        console.log(pokemonLists)
-
-    }
+        setPokemonListState(state => ({
+            ...state,
+            pokemonLists: pokemonFinalList
+        }));
+    };
 
     useEffect(() => {
-        fetchPokemon()
-    }, [pokeUrl])
+        fetchPokemon();
+    }, [pokemonListState.pokeUrl]);
 
     return (
         <div className='PokemonList'>
-            <div>
-                <h2>Pokemon Lists</h2>
-            </div>
+            <h2>Pokemon Lists</h2>
             <div className='control-btns'>
-                <button onClick={()=> setPokeUrl(prevUrl)}>Prev</button>
-                <button onClick={() => setPokeUrl(nextUrl)}>Next</button>
+                <button 
+                    disabled={!pokemonListState.prevUrl}
+                    onClick={() => setPokemonListState(state => ({
+                        ...state,
+                        pokeUrl: state.prevUrl
+                    }))}>
+                    Prev
+                </button>
+                <button 
+                    disabled={!pokemonListState.nextUrl}
+                    onClick={() => setPokemonListState(state => ({
+                        ...state,
+                        pokeUrl: state.nextUrl
+                    }))}>
+                    Next
+                </button>
             </div>
             <div className='pokemon-card-container'>
-                {
-                    pokemonLists.map((pokemon, idx) => (
-                        <div key={idx} className='pokemon-card' >
-                            <h4>{pokemon.name}</h4>
-                            <div className='card-poster'>
-                                <img src={pokemon.image} alt={pokemon.name} />
-                            </div>
-                        </div>
-                    ))
-                }
+                {pokemonListState.pokemonLists.map((pokemon, idx) => (
+                    <Pokemon key={idx} name={pokemon.name} image={pokemon.image} id={pokemon.id} />
+                ))}
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default PokemonList
+export default PokemonList;
