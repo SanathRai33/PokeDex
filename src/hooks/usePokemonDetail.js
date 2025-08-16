@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const usePokemonDetail = (id) => {
+const usePokemonDetail = (id, name) => {
   const [pokemon, setPokemon] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const POKEMON_URL = `https://pokeapi.co/api/v2/pokemon/${id}`;
+  const POKEMON_URL = `https://pokeapi.co/api/v2/pokemon/${name?name:id}`;
 
   useEffect(() => {
     async function fetchPokemonDetail() {
@@ -23,20 +23,16 @@ const usePokemonDetail = (id) => {
           height: data.height,
           weight: data.weight,
         });
-        
       } catch (err) {
-        setError(err.message || "Failed to fetch Pokémon data");
+        setError("Pokemon not found, write full name or use new keyword");
       } finally {
         setLoading(false);
       }
     }
 
     fetchPokemonDetail();
-  }, [id]);
-
-        // console.log("pokemon", pokemon?.types[0])
-        // const res = await axios.get(`https://pokeapi.co/api/v2/type/${pokemon.types[0]}`);
-        // console.log(res.data);
+  }, [id, name]);
+  
   return { pokemon, loading, error };
 };
 

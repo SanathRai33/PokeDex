@@ -3,11 +3,10 @@ import { useParams } from "react-router-dom";
 import usePokemonDetail from "../../hooks/usePokemonDetail"; // custom hook
 import "./PokemonDetail.css";
 import PokemonList from "../PokemonList/PokemonList";
-import axios from "axios";
 
-const PokemonDetail = () => {
+const PokemonDetail = ({name}) => {
     const { id } = useParams();
-    const { pokemon, loading, error } = usePokemonDetail(id);
+    const { pokemon, loading, error } = usePokemonDetail(name? name : id);
 
     if (loading) {
         return <div className="loading">Loading Pokémon...</div>;

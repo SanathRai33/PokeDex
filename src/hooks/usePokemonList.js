@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 const usePokemonList = (URL) => {
   const DEFAULT_URL = URL;
 
-  console.log(URL);
-
   const [pokemonListState, setPokemonListState] = useState({
     pokemonLists: [],
     pokeUrl: DEFAULT_URL,
@@ -36,7 +34,7 @@ const usePokemonList = (URL) => {
         pokemonResult = response.data.pokemon.slice(0, 20).map((p) => p.pokemon);
         setPokemonListState((state) => ({
           ...state,
-          prevUrl: null, // no prev/next for type endpoint
+          prevUrl: null,
           nextUrl: null,
         }));
       }
@@ -63,7 +61,7 @@ const usePokemonList = (URL) => {
     } catch (error) {
       setPokemonListState((state) => ({
         ...state,
-        error: error.message || "Failed to fetch Pokémon list",
+        error: "Failed to fetch Pokémon list",
       }));
     } finally {
       setPokemonListState((state) => ({
